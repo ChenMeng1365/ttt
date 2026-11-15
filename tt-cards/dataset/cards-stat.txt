@@ -1,0 +1,5 @@
+# 卡池统计 (110 张)
+type 分布: boss 33 / gf 22 / monster 44 / player 11
+level 分布: lv1 11 lv2 11 lv3 11 lv4 11 lv5 11 lv6 11 lv7 11 lv8 11 lv9 11 lv10 11
+带元素卡: 36 张 (earth/fire/holy/ice/poison/thunder/water/wind)
+双 A 面: 3 张

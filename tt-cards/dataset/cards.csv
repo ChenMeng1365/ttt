@@ -1,0 +1,111 @@
+id,name,type,level,element,top,right,bottom,left,ranks,image
+1,Geezard,monster,1,,1,4,1,5,1415,card-001.png
+2,Funguar,monster,1,,5,1,1,3,5113,card-002.png
+3,Bite Bug,monster,1,,1,3,3,5,1335,card-003.png
+4,Red Bat,monster,1,,6,1,1,2,6112,card-004.png
+5,Blobra,monster,1,,2,3,1,5,2315,card-005.png
+6,Gayla,monster,1,thunder,2,1,4,4,2144,card-006.png
+7,Gesper,monster,1,,1,5,4,1,1541,card-007.png
+8,Fastitocalon-F,monster,1,earth,3,5,2,1,3521,card-008.png
+9,Blood Soul,monster,1,,2,1,6,1,2161,card-009.png
+10,Caterchipillar,monster,1,,4,2,4,3,4243,card-010.png
+11,Cockatrice,monster,1,thunder,2,1,2,6,2126,card-011.png
+12,Grat,monster,2,,7,1,3,1,7131,card-012.png
+13,Buel,monster,2,,6,2,2,3,6223,card-013.png
+14,Mesmerize,monster,2,,5,3,3,4,5334,card-014.png
+15,Glacial Eye,monster,2,ice,6,1,4,3,6143,card-015.png
+16,Belhelmel,monster,2,,3,4,5,3,3453,card-016.png
+17,Thrustaevis,monster,2,wind,5,3,2,5,5325,card-017.png
+18,Anacondaur,monster,2,poison,5,1,3,5,5135,card-018.png
+19,Creeps,monster,2,thunder,5,2,5,2,5252,card-019.png
+20,Grendel,monster,2,thunder,4,4,5,2,4452,card-020.png
+21,Jelleye,monster,2,,3,2,1,7,3217,card-021.png
+22,Grand Mantis,monster,2,,5,2,5,3,5253,card-022.png
+23,Forbidden,monster,3,,6,6,3,2,6632,card-023.png
+24,Armadodo,monster,3,earth,6,3,1,6,6316,card-024.png
+25,Tri-Face,monster,3,poison,3,5,5,5,3555,card-025.png
+26,Fastitocalon,monster,3,earth,7,5,1,3,7513,card-026.png
+27,Snow Lion,monster,3,ice,7,1,5,3,7153,card-027.png
+28,Ochu,monster,3,,5,6,3,3,5633,card-028.png
+29,SAM08G,monster,3,fire,5,6,2,4,5624,card-029.png
+30,Death Claw,monster,3,fire,4,4,7,2,4472,card-030.png
+31,Cactuar,monster,3,,6,2,6,3,6263,card-031.png
+32,Tonberry,monster,3,,3,6,4,4,3644,card-032.png
+33,Abyss Worm,monster,3,earth,7,2,3,5,7235,card-033.png
+34,Turtapod,monster,4,,2,3,6,7,2367,card-034.png
+35,Vysage,monster,4,,6,5,4,5,6545,card-035.png
+36,T-Rexaur,monster,4,,4,6,2,7,4627,card-036.png
+37,Bomb,monster,4,fire,2,7,6,3,2763,card-037.png
+38,Blitz,monster,4,thunder,1,6,4,7,1647,card-038.png
+39,Wendigo,monster,4,,7,3,1,6,7316,card-039.png
+40,Torama,monster,4,,7,4,4,4,7444,card-040.png
+41,Imp,monster,4,,3,7,3,6,3736,card-041.png
+42,Blue Dragon,monster,4,poison,6,2,7,3,6273,card-042.png
+43,Adamantoise,monster,4,earth,4,5,5,6,4556,card-043.png
+44,Hexadragon,monster,4,fire,7,5,4,3,7543,card-044.png
+45,Iron Giant,boss,5,,6,5,6,5,6565,card-045.png
+46,Behemoth,boss,5,,3,6,5,7,3657,card-046.png
+47,Chimera,boss,5,water,7,6,5,3,7653,card-047.png
+48,PuPu,boss,5,,3,10,2,1,3A21,card-048.png
+49,Elastoid,boss,5,,6,2,6,7,6267,card-049.png
+50,GIM47N,boss,5,,5,5,7,4,5574,card-050.png
+51,Malboro,boss,5,poison,7,7,4,2,7742,card-051.png
+52,Ruby Dragon,boss,5,fire,7,2,7,4,7274,card-052.png
+53,Elnoyle,boss,5,,5,3,7,6,5376,card-053.png
+54,Tonberry King,boss,5,,4,6,7,4,4674,card-054.png
+55,Wedge, Biggs,boss,5,,6,6,2,7,6627,card-055.png
+56,Fujin Raijin,boss,6,,2,8,8,4,2884,card-056.png
+57,Elvoret,boss,6,wind,7,8,3,4,7834,card-057.png
+58,X-ATM092,boss,6,,4,8,7,3,4873,card-058.png
+59,Granaldo,boss,6,,7,2,8,5,7285,card-059.png
+60,Gerogero,boss,6,poison,1,8,8,3,1883,card-060.png
+61,Iguion,boss,6,,8,2,8,2,8282,card-061.png
+62,Abadon,boss,6,,6,8,4,5,6845,card-062.png
+63,Trauma,boss,6,,4,8,5,6,4856,card-063.png
+64,Oilboyle,boss,6,,1,8,4,8,1848,card-064.png
+65,Shumi,boss,6,,6,5,8,4,6584,card-065.png
+66,Krysta,boss,6,,7,5,8,1,7581,card-066.png
+67,Propagator,boss,7,,8,4,4,8,8448,card-067.png
+68,Jumbo Cactuar,boss,7,,8,8,4,4,8844,card-068.png
+69,Tri-Point,boss,7,thunder,8,5,2,8,8528,card-069.png
+70,Gargantua,boss,7,,5,6,6,8,5668,card-070.png
+71,Mobile Type 8,boss,7,,8,6,7,3,8673,card-071.png
+72,Sphinxara,boss,7,,8,3,5,8,8358,card-072.png
+73,Tiamat,boss,7,,8,8,5,4,8854,card-073.png
+74,BGH251F2,boss,7,,5,7,8,5,5785,card-074.png
+75,Red Giant,boss,7,,6,8,4,7,6847,card-075.png
+76,Catoblepas,boss,7,,1,8,7,7,1877,card-076.png
+77,Ultima Weapon,boss,7,,7,7,2,8,7728,card-077.png
+78,Chubby Chocobo,gf,8,,4,4,8,9,4489,card-078.png
+79,Angelo,gf,8,,9,6,7,3,9673,card-079.png
+80,Gilgamesh,gf,8,,3,7,9,6,3796,card-080.png
+81,MiniMog,gf,8,,9,3,9,2,9392,card-081.png
+82,Chicobo,gf,8,,9,4,8,4,9484,card-082.png
+83,Quezacotl,gf,8,thunder,2,9,9,4,2994,card-083.png
+84,Shiva,gf,8,ice,6,7,4,9,6749,card-084.png
+85,Ifrit,gf,8,fire,9,6,2,8,9628,card-085.png
+86,Siren,gf,8,,8,9,6,2,8962,card-086.png
+87,Sacred,gf,8,earth,5,1,9,9,5199,card-087.png
+88,Minotaur,gf,8,earth,9,5,2,9,9529,card-088.png
+89,Carbuncle,gf,9,,8,4,10,4,84A4,card-089.png
+90,Diablos,gf,9,,5,10,8,3,5A83,card-090.png
+91,Leviathan,gf,9,water,7,10,1,7,7A17,card-091.png
+92,Odin,gf,9,,8,10,3,5,8A35,card-092.png
+93,Pandemona,gf,9,wind,10,1,7,7,A177,card-093.png
+94,Cerberus,gf,9,,7,4,6,10,746A,card-094.png
+95,Alexander,gf,9,holy,9,10,4,2,9A42,card-095.png
+96,Phoenix,gf,9,fire,7,2,7,10,727A,card-096.png
+97,Bahamut,gf,9,,10,8,2,6,A826,card-097.png
+98,Doomtrain,gf,9,poison,3,1,10,10,31AA,card-098.png
+99,Eden,gf,9,,4,4,9,10,449A,card-099.png
+100,Ward,player,10,,10,7,2,8,A728,card-100.png
+101,Kiros,player,10,,6,7,6,10,676A,card-101.png
+102,Laguna,player,10,,5,10,3,9,5A39,card-102.png
+103,Selphie,player,10,,10,8,6,4,A864,card-103.png
+104,Quistis,player,10,,9,6,10,2,96A2,card-104.png
+105,Irvine,player,10,,2,6,9,10,269A,card-105.png
+106,Zell,player,10,,8,5,10,6,85A6,card-106.png
+107,Rinoa,player,10,,4,10,2,10,4A2A,card-107.png
+108,Edea,player,10,,10,10,3,3,AA33,card-108.png
+109,Seifer,player,10,,6,9,10,4,69A4,card-109.png
+110,Squall,player,10,,10,4,6,9,A469,card-110.png

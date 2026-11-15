@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>九宫幻卡 · TripleTriad</title>
+<style>
+/* ==== 基调: 深色科技感, 紧凑居中 ==== */
+:root{
+  --bg:#070b12; --panel:#0d1420; --line:#1c2940;
+  --tx:#c9d6e8; --mut:#7189a6;
+  --blue:#4da3ff; --red:#ff5f5f; --gold:#e8c96a;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--tx); min-height:100vh;
+  font:14px/1.5 "Segoe UI","Microsoft YaHei",system-ui,sans-serif;
+  display:flex; flex-direction:column; align-items:center;
+}
+/* 背景细网格 */
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(70,120,190,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(70,120,190,.05) 1px,transparent 1px);
+  background-size:38px 38px;
+}
+.wrap{width:640px; max-width:96vw; padding:10px 0 14px; position:relative}
+
+/* ==== 顶栏 ==== */
+header{display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  border:1px solid var(--line); border-radius:10px; padding:10px 14px;
+  background:linear-gradient(180deg,#0e1726,#0b1220);}
+.brand{font-weight:700; font-size:17px; letter-spacing:1px}
+.brand em{font-style:normal; color:var(--mut); font-size:12px; margin-left:6px}
+.badges{display:flex; gap:5px; flex-wrap:wrap}
+.badge{font-size:11px; padding:2px 8px; border-radius:9px;
+  border:1px solid var(--line); color:var(--mut)}
+.badge.on{color:#0b1220; font-weight:700}
+.badge.on.b0{background:#3a4557; border-color:#3a4557}
+.badge.on.sb{background:var(--blue); border-color:var(--blue)}
+.badge.on.pb{background:#7ee08a; border-color:#7ee08a}
+.badge.on.wb{background:var(--gold); border-color:var(--gold)}
+.badge.on.eb{background:#c98ae8; border-color:#c98ae8}
+.badge.on.cb{background:#e86a9a; border-color:#e86a9a}
+.badge.on.sdb{background:#e86a4a; border-color:#e86a4a}
+.ctrl{width:100%; display:flex; gap:5px; align-items:center; flex-wrap:wrap}
+select,button{
+  background:#101a2c; color:var(--tx); border:1px solid var(--line);
+  border-radius:6px; padding:3px 6px; font:11px/1.2 "Microsoft YaHei",sans-serif;
+  cursor:pointer; outline:none; transition:.15s}
+button:hover,select:hover{border-color:#3d5a86; color:#fff}
+button{box-shadow:0 0 0 transparent}
+button:hover{box-shadow:0 0 10px rgba(77,163,255,.35)}
+label{display:flex; align-items:center; gap:3px; font-size:11px; color:var(--mut);
+  cursor:pointer; user-select:none}
+input[type=checkbox]{accent-color:var(--blue); cursor:pointer; transform:scale(.9)}
+.rulehint{width:100%; font-size:10px; color:var(--mut); margin-top:2px}
+.rulehint b{color:var(--gold); font-weight:400}
+
+/* ==== 区块: 红左中盘蓝右对坐, 高度压缩进一页 ==== */
+main{display:flex; gap:12px; justify-content:center; align-items:center; margin-top:10px}
+.side{display:flex; flex-direction:column; align-items:center; gap:6px; margin:0; width:146px;
+  border:1px solid var(--line); border-radius:10px; padding:8px 6px;
+  background:var(--panel)}
+.side .who{width:auto; margin-bottom:2px; text-align:center;
+  font-size:13px; font-weight:700; color:var(--mut); flex:none; transition:.25s}
+.who.b.act{color:var(--blue); text-shadow:0 0 14px rgba(77,163,255,.8)}
+.who.r.act{color:var(--red); text-shadow:0 0 14px rgba(255,95,95,.8)}
+.who small{display:block; font-size:10px; font-weight:400; color:var(--mut)}
+.hand{display:flex; gap:6px; flex:none; flex-direction:column; align-items:center}
+
+/* ==== 牌面: 数值嵌四边, 名字居中 ==== */
+.card{
+  position:relative; width:70px; height:94px; flex:none;
+  border-radius:8px; cursor:default; transition:transform .22s ease, box-shadow .22s ease;
+  font-family:Consolas,"JetBrains Mono",monospace;
+}
+.card .v{position:absolute; font-size:14px; font-weight:700; line-height:1}
+.card .v.u{top:6px; left:0; right:0; text-align:center}
+.card .v.d{bottom:6px; left:0; right:0; text-align:center}
+.card .v.l{left:7px; top:0; bottom:0; display:flex; align-items:center}
+.card .v.r{right:7px; top:0; bottom:0; display:flex; align-items:center}
+.card .nm{position:absolute; top:50%; left:4px; right:4px; transform:translateY(-50%);
+  text-align:center; font-size:9px; font-weight:400; color:#889db5;
+  font-family:"Segoe UI","Microsoft YaHei",sans-serif; letter-spacing:.2px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.card.b{border:1px solid #2e6cc0;
+  background:linear-gradient(160deg,#0d1c31,#091222);
+  box-shadow:0 0 9px rgba(77,163,255,.22), inset 0 0 14px rgba(77,163,255,.10)}
+.card.b .v{color:#9fd0ff}
+.card.r{border:1px solid #c24040;
+  background:linear-gradient(160deg,#2a0f11,#190a0c);
+  box-shadow:0 0 9px rgba(255,95,95,.22), inset 0 0 14px rgba(255,95,95,.10)}
+.card.r .v{color:#ffb3b3}
+/* 手牌可点: 上浮选中态 */
+.hand .card{cursor:pointer}
+.hand .card:hover{transform:translateY(-4px)}
+.hand .card.sel{transform:translateY(-9px); outline:2px solid var(--gold); outline-offset:2px;
+  box-shadow:0 0 18px rgba(232,201,106,.5)}
+/* 翻牌半程: 转 90 度时换色, 无镜像 */
+.card.mid{transform:rotateY(90deg) scale(1.06)}
+/* 落子弹入 */
+@keyframes pop{from{transform:scale(.55);opacity:0}to{transform:scale(1);opacity:1}}
+.card.pop{animation:pop .28s cubic-bezier(.2,1.4,.5,1)}
+
+/* ==== 渲染模式切换段控件 ==== */
+.seg{display:flex; border:1px solid var(--line); border-radius:6px; overflow:hidden}
+.seg button{border:none; border-radius:0; padding:3px 8px; color:var(--mut); background:#101a2c; font-size:11px}
+.seg button.on{background:#1c2f52; color:#fff}
+
+/* ==== 图片渲染模式: tt-cards 素材为图案层, 数值/元素程序叠加 ==== */
+.card.imgv{background:#0b1220}
+.card.imgv .bg{position:absolute; inset:1px; width:calc(100% - 2px); height:calc(100% - 2px);
+  object-fit:cover; border-radius:6px; background:#e8e4d8}
+.card.imgv .v{color:#fff; z-index:2; text-shadow:0 1px 2px #000, 0 0 5px rgba(0,0,0,.85)}
+.card.imgv .nm{display:none}
+/* 元素角标: 文字/图片两模式通用 */
+.card .el{position:absolute; top:2px; right:3px; width:15px; height:15px; z-index:2;
+  filter:drop-shadow(0 1px 2px #000)}
+.card.imgv .el{z-index:2}
+.card.imgv.imgfail .bg{display:none}
+.card.imgv.imgfail .nm{display:block}
+.hslot{display:flex; align-items:center; gap:6px}
+#handR .hslot{flex-direction:row}          /* 红列: 卡左名右 */
+#handB .hslot{flex-direction:row-reverse}   /* 蓝列: 名左卡右 */
+.hslot .hn{width:54px; flex:none; font-size:9px; color:var(--mut); text-align:center;
+  line-height:1.25; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2;
+  -webkit-box-orient:vertical; word-break:break-all;
+  font-family:"Segoe UI","Microsoft YaHei",sans-serif}
+/* 骤亡翻面出局: 灰化不计胜负 */
+.card.dead{filter:grayscale(1) brightness(.45); opacity:.38}
+.card.dead .v{color:#aaa}
+
+/* ==== 棋盘 ==== */
+#board{display:grid; grid-template-columns:repeat(3,86px); gap:10px;
+  justify-content:center; padding:12px;
+  border:1px solid var(--line); border-radius:10px; background:var(--panel)}
+.cell{position:relative; width:86px; height:110px; border-radius:9px;
+  border:1px dashed #26354e; display:flex; align-items:center; justify-content:center;
+  transition:.18s}
+.cell.hasEl{border-color:#6a5a2a; background:rgba(232,201,106,.06)}
+.cell .cel{position:absolute; top:2px; left:3px; width:15px; height:15px; z-index:3;
+  filter:drop-shadow(0 0 2px #000); opacity:.95}
+.cell .pos{font-size:15px; color:#3a4f6e; font-family:Consolas,monospace}
+.cell.ok{border:1px solid #3a7a4e; cursor:pointer;
+  background:rgba(90,200,130,.06); box-shadow:inset 0 0 12px rgba(90,200,130,.12)}
+.cell.ok:hover{border-color:#6fd895; box-shadow:0 0 14px rgba(90,200,130,.35)}
+.cell.ok .pos{color:#5b9a74}
+.cell .card{width:80px; height:104px}
+.cell .card .v{font-size:15px}
+.cell .card .nm{font-size:10px}
+
+/* ==== 底栏: 回合 / 比分 / 日志 ==== */
+footer{display:flex; align-items:center; gap:14px; margin-top:10px;
+  border:1px solid var(--line); border-radius:10px; padding:7px 14px;
+  background:var(--panel); font-size:13px; flex-wrap:wrap}
+#turn{font-weight:700}
+#turn.b{color:var(--blue)} #turn.r{color:var(--red)} #turn.d{color:var(--mut)}
+#score{font-family:Consolas,monospace; font-size:14px; letter-spacing:.5px}
+#score .sb{color:var(--blue)} #score .sr{color:var(--red)}
+#score small{color:var(--mut); font-family:"Microsoft YaHei"; margin-left:6px}
+#log{margin-left:auto; color:var(--mut); font-size:12px; max-width:280px;
+  overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+
+/* ==== 终局遮罩 ==== */
+#overlay{position:fixed; inset:0; background:rgba(4,8,14,.82);
+  display:none; align-items:center; justify-content:center; z-index:9;
+  backdrop-filter:blur(3px)}
+#overlay.show{display:flex}
+.ovbox{text-align:center; padding:34px 46px; border-radius:14px;
+  border:1px solid var(--line); background:linear-gradient(180deg,#101a2c,#0b1220);
+  box-shadow:0 0 40px rgba(77,163,255,.15)}
+.ovbox .t{font-size:34px; font-weight:800; letter-spacing:6px; margin-bottom:12px}
+.ovbox .t.b{color:var(--blue); text-shadow:0 0 24px rgba(77,163,255,.7)}
+.ovbox .t.r{color:var(--red); text-shadow:0 0 24px rgba(255,95,95,.7)}
+.ovbox .t.d{color:var(--gold); text-shadow:0 0 24px rgba(232,201,106,.6)}
+.ovbox .sc{font-family:Consolas,monospace; font-size:16px; margin-bottom:6px}
+.ovbox .sc .sb{color:var(--blue)} .ovbox .sc .sr{color:var(--red)}
+.ovbox .mut{color:var(--mut); font-size:12px; margin-bottom:20px}
+.ovbox .mut .hold{color:var(--gold)}
+.ovbox button{font-size:14px; padding:9px 26px; margin:0 5px}
+
+/* ==== 轻提示 ==== */
+#toast{position:fixed; left:50%; bottom:34px; transform:translateX(-50%) translateY(20px);
+  background:#152238; border:1px solid #2c4a77; color:#bcd6f5; border-radius:8px;
+  padding:8px 18px; font-size:13px; opacity:0; pointer-events:none; transition:.25s; z-index:9}
+#toast.show{opacity:1; transform:translateX(-50%)}
+
+/* ==== 自选卡组面板 ==== */
+#picker{position:fixed; inset:0; background:rgba(4,8,14,.86); z-index:10;
+  display:none; align-items:center; justify-content:center; backdrop-filter:blur(3px)}
+#picker.show{display:flex}
+.pkbox{width:700px; max-width:95vw; border:1px solid var(--line); border-radius:12px;
+  background:linear-gradient(180deg,#101a2c,#0b1220); padding:14px;
+  box-shadow:0 0 40px rgba(77,163,255,.15)}
+.pkn{display:flex; justify-content:space-between; align-items:center; font-weight:700;
+  margin-bottom:10px; color:#fff}
+.pkn .pkk{color:var(--gold); font-family:Consolas,monospace}
+.pkgrid{display:grid; grid-template-columns:repeat(6, 100px); gap:8px; justify-content:center;
+  max-height:58vh; overflow-y:auto; padding:8px 4px}
+.pkc{cursor:pointer; position:relative; width:100px; border-radius:8px; padding-top:4px;
+  transition:.15s}
+.pkc:hover{background:rgba(77,163,255,.08)}
+.pkc .card{margin:0 auto}
+.pkc.sel{background:rgba(232,201,106,.10); outline:1px solid rgba(232,201,106,.4)}
+.pkc.sel .card{outline:2px solid var(--gold); outline-offset:1px; box-shadow:0 0 14px rgba(232,201,106,.45)}
+.pkc.off{opacity:.25; pointer-events:none; cursor:not-allowed}
+.pkc .no{font-size:9px; color:var(--mut); font-family:Consolas,monospace; text-align:center;
+  display:block; margin-bottom:2px}
+.pkbar{display:flex; justify-content:flex-end; gap:10px; margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="brand">九宫幻卡<em>TripleTriad</em></div>
+    <div class="badges" id="badges"></div>
+    <div class="ctrl">
+      <select id="mode">
+        <option value="pve">人机对战</option>
+        <option value="pvp">双人对战</option>
+        <option value="demo">AI 演示</option>
+      </select>
+      <label><input type="checkbox" id="cSame">Same</label>
+      <label><input type="checkbox" id="cPlus">Plus</label>
+      <label><input type="checkbox" id="cWall">Wall</label>
+      <label><input type="checkbox" id="cElem">Elemental</label>
+      <label><input type="checkbox" id="cSD">SuddenDeath</label>
+      <label><input type="checkbox" id="cCombo" checked>Combo</label>
+      <select id="trade" title="终局交换规则">
+        <option value="one">交换·One</option>
+        <option value="diff">交换·Diff</option>
+        <option value="direct">交换·Direct</option>
+        <option value="all">交换·All</option>
+      </select>
+      <select id="deal" title="发牌方式">
+        <option value="random">发牌·随机</option>
+        <option value="pick">发牌·自选</option>
+      </select>
+      <div class="seg">
+        <button id="vText" title="纯文字卡面">Aa 文字</button>
+        <button id="vImg" title="图片卡面 (tt-cards 素材库)">▣ 图片</button>
+      </div>
+      <button id="btnNew">↻ 新对局</button>
+    </div>
+    <div class="rulehint">十牌九格 · 终局<b>先手计场上牌，后手计场上牌加手中滞留牌</b> · Elemental: 元素格同元素+1异则-1 · 交换: 赢家按 One/Diff/All 从输家拿卡</div>
+  </header>
+
+  <main>
+  <section class="side">
+    <div class="who r" id="whoR">红方<small id="whoRsub">AI</small></div>
+    <div class="hand" id="handR"></div>
+  </section>
+
+  <section id="board"></section>
+
+  <section class="side">
+    <div class="who b" id="whoB">蓝方<small id="whoBsub">你</small></div>
+    <div class="hand" id="handB"></div>
+  </section>
+  </main>
+
+  <footer>
+    <div id="turn" class="d">—</div>
+    <div id="score"></div>
+    <div id="log">就绪</div>
+  </footer>
+
+</div>
+
+<div id="overlay">
+  <div class="ovbox">
+    <div class="t" id="ovT"></div>
+    <div class="sc" id="ovS"></div>
+    <div class="mut" id="ovM"></div>
+    <button id="ovBtn">再来一局</button>
+  </div>
+</div>
+<div id="toast"></div>
+
+<div id="picker">
+  <div class="pkbox">
+    <div class="pkn"><span id="pkTitle">选牌</span><span id="pkCount" class="pkk">0/5</span></div>
+    <div class="pkgrid" id="pkGrid"></div>
+    <div class="pkbar">
+      <button id="pkCancel">取消</button>
+      <button id="pkOk">✓ 确认开局</button>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ==== card ==== 48 张 FF8 卡池, 四值 [上右下左], 10 显示 A */
+const CARDS=[
+["Geezard",1,4,1,5,null],
+["Funguar",5,1,1,3,null],
+["Bite Bug",1,3,3,5,null],
+["Red Bat",6,1,1,2,null],
+["Blobra",2,3,1,5,null],
+["Gayla",2,1,4,4,"thunder"],
+["Gesper",1,5,4,1,null],
+["Fastitocalon-F",3,5,2,1,"earth"],
+["Blood Soul",2,1,6,1,null],
+["Caterchipillar",4,2,4,3,null],
+["Cockatrice",2,1,2,6,"thunder"],
+["Grat",7,1,3,1,null],
+["Buel",6,2,2,3,null],
+["Mesmerize",5,3,3,4,null],
+["Glacial Eye",6,1,4,3,"ice"],
+["Belhelmel",3,4,5,3,null],
+["Thrustaevis",5,3,2,5,"wind"],
+["Anacondaur",5,1,3,5,"poison"],
+["Creeps",5,2,5,2,"thunder"],
+["Grendel",4,4,5,2,"thunder"],
+["Jelleye",3,2,1,7,null],
+["Grand Mantis",5,2,5,3,null],
+["Forbidden",6,6,3,2,null],
+["Armadodo",6,3,1,6,"earth"],
+["Tri-Face",3,5,5,5,"poison"],
+["Fastitocalon",7,5,1,3,"earth"],
+["Snow Lion",7,1,5,3,"ice"],
+["Ochu",5,6,3,3,null],
+["SAM08G",5,6,2,4,"fire"],
+["Death Claw",4,4,7,2,"fire"],
+["Cactuar",6,2,6,3,null],
+["Tonberry",3,6,4,4,null],
+["Abyss Worm",7,2,3,5,"earth"],
+["Turtapod",2,3,6,7,null],
+["Vysage",6,5,4,5,null],
+["T-Rexaur",4,6,2,7,null],
+["Bomb",2,7,6,3,"fire"],
+["Blitz",1,6,4,7,"thunder"],
+["Wendigo",7,3,1,6,null],
+["Torama",7,4,4,4,null],
+["Imp",3,7,3,6,null],
+["Blue Dragon",6,2,7,3,"poison"],
+["Adamantoise",4,5,5,6,"earth"],
+["Hexadragon",7,5,4,3,"fire"],
+["Iron Giant",6,5,6,5,null],
+["Behemoth",3,6,5,7,null],
+["Chimera",7,6,5,3,"water"],
+["PuPu",3,10,2,1,null],
+["Elastoid",6,2,6,7,null],
+["GIM47N",5,5,7,4,null],
+["Malboro",7,7,4,2,"poison"],
+["Ruby Dragon",7,2,7,4,"fire"],
+["Elnoyle",5,3,7,6,null],
+["Tonberry King",4,6,7,4,null],
+["Wedge, Biggs",6,6,2,7,null],
+["Fujin Raijin",2,8,8,4,null],
+["Elvoret",7,8,3,4,"wind"],
+["X-ATM092",4,8,7,3,null],
+["Granaldo",7,2,8,5,null],
+["Gerogero",1,8,8,3,"poison"],
+["Iguion",8,2,8,2,null],
+["Abadon",6,8,4,5,null],
+["Trauma",4,8,5,6,null],
+["Oilboyle",1,8,4,8,null],
+["Shumi",6,5,8,4,null],
+["Krysta",7,5,8,1,null],
+["Propagator",8,4,4,8,null],
+["Jumbo Cactuar",8,8,4,4,null],
+["Tri-Point",8,5,2,8,"thunder"],
+["Gargantua",5,6,6,8,null],
+["Mobile Type 8",8,6,7,3,null],
+["Sphinxara",8,3,5,8,null],
+["Tiamat",8,8,5,4,null],
+["BGH251F2",5,7,8,5,null],
+["Red Giant",6,8,4,7,null],
+["Catoblepas",1,8,7,7,null],
+["Ultima Weapon",7,7,2,8,null],
+["Chubby Chocobo",4,4,8,9,null],
+["Angelo",9,6,7,3,null],
+["Gilgamesh",3,7,9,6,null],
+["MiniMog",9,3,9,2,null],
+["Chicobo",9,4,8,4,null],
+["Quezacotl",2,9,9,4,"thunder"],
+["Shiva",6,7,4,9,"ice"],
+["Ifrit",9,6,2,8,"fire"],
+["Siren",8,9,6,2,null],
+["Sacred",5,1,9,9,"earth"],
+["Minotaur",9,5,2,9,"earth"],
+["Carbuncle",8,4,10,4,null],
+["Diablos",5,10,8,3,null],
+["Leviathan",7,10,1,7,"water"],
+["Odin",8,10,3,5,null],
+["Pandemona",10,1,7,7,"wind"],
+["Cerberus",7,4,6,10,null],
+["Alexander",9,10,4,2,"holy"],
+["Phoenix",7,2,7,10,"fire"],
+["Bahamut",10,8,2,6,null],
+["Doomtrain",3,1,10,10,"poison"],
+["Eden",4,4,9,10,null],
+["Ward",10,7,2,8,null],
+["Kiros",6,7,6,10,null],
+["Laguna",5,10,3,9,null],
+["Selphie",10,8,6,4,null],
+["Quistis",9,6,10,2,null],
+["Irvine",2,6,9,10,null],
+["Zell",8,5,10,6,null],
+["Rinoa",4,10,2,10,null],
+["Edea",10,10,3,3,null],
+["Seifer",6,9,10,4,null],
+["Squall",10,4,6,9,null],
+].map((a,i)=>({nm:a[0], vl:a.slice(1,5), el:a[5], id:i+1}));
+const hx=v=>v===10?"A":""+v;
+const tag=cd=>cd.vl.map(hx).join("");
+const who=s=>s==="b"?"蓝":"红";
+const ELEMENTS=["fire","ice","thunder","water","earth","poison","wind","holy"];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;
+  [a[i],a[j]]=[a[j],a[i]]}return a}
+
+/* ==== triad ==== 与 tt.rb 同源: 基本翻转 / Same / Plus / Wall / Combo */
+// 方向: 0上 1右 2下 3左, 相对面 (d+2)%4
+function nbr(i){
+  const r=i/3|0, c=i%3, a=[];
+  if(r>0)a.push([i-3,0]);
+  if(c<2)a.push([i+1,1]);
+  if(r<2)a.push([i+3,2]);
+  if(c>0)a.push([i-1,3]);
+  return a;
+}
+// 结算: 返回翻转波次 [[位...], ...] —— 波0 基本翻转, 波1 Same/Plus, 后续 Combo 连锁
+// ce 为元素格表: 元素修正只作用于新落牌本回合进攻, 连锁牌用原始值
+function settle(bd,i,cd,sd,rl,ce){
+  const fv=(ce && ce[i]) ? cd.vl.map(v=>cd.el===ce[i]?v+1:v-1) : cd.vl;
+  const waves=[], fl=new Set(), w0=[];
+  for(const [np,d] of nbr(i)){
+    const t=bd[np];
+    if(t && t.sd!==sd && fv[d]>t.cd.vl[(d+2)%4]){ fl.add(np); w0.push(np); }
+  }
+  if(w0.length) waves.push(w0);
+  if(rl.same||rl.plus){
+    let ct=nbr(i).filter(x=>bd[x[0]]).map(([np,d])=>{
+      const t=bd[np];
+      return [np, fv[d], t.cd.vl[(d+2)%4], t.sd];
+    });
+    if(rl.wall){                       // 出界方向视为 A, 参与判定但无从翻起
+      const ex=nbr(i).map(x=>x[1]);
+      for(let d=0;d<4;d++) if(!ex.includes(d)) ct.push([-1, fv[d], 10, null]);
+    }
+    const w1=[];
+    if(rl.same){                       // 两个接触面同值齐翻
+      const eq=ct.filter(x=>x[1]===x[2]);
+      if(eq.length>1) for(const [np,a,b,s] of eq)
+        if(np>=0 && s!==sd && !fl.has(np)){ fl.add(np); w1.push(np); }
+    }
+    if(rl.plus){                       // 两个接触面同和齐翻
+      const sum={};
+      for(const [np,a,b,s] of ct) (sum[a+b]=sum[a+b]||[]).push([np,s]);
+      for(const ls of Object.values(sum)) if(ls.length>1)
+        for(const [np,s] of ls)
+          if(np>=0 && s!==sd && !fl.has(np)){ fl.add(np); w1.push(np); }
+    }
+    if(w1.length){
+      waves.push(w1);
+      if(rl.combo!==false){            // Combo 连锁施压逐波传播 (可关)
+        let cur=w1;
+        while(cur.length){
+          const nx=[];
+          for(const s of cur){
+            const sc=bd[s].cd;
+            for(const [np,d] of nbr(s)){
+              const t=bd[np];
+              if(t && t.sd!==sd && !fl.has(np) && sc.vl[d]>t.cd.vl[(d+2)%4]){
+                fl.add(np); nx.push(np);
+              }
+            }
+          }
+          if(nx.length) waves.push(nx);
+          cur=nx;
+        }
+      }
+    }
+  }
+  return waves;
+}
+// 落子并结算, 返回波次
+function put(bd,i,cd,sd,rl,ce){ bd[i]={cd,sd}; return settle(bd,i,cd,sd,rl,ce); }
+function count(bd){ let b=0,r=0;
+  for(const t of bd){ if(!t || t.dead)continue; t.sd==="b"?b++:r++; } return [b,r]; }
+
+/* ==== ai ==== 贪心: 翻牌收益 + 落位权重 + 弱牌先出微倾向 (同 tt.rb) */
+function aiPick(bd,hand,sd,rl,ce){
+  const pv=[3,2,3,2,4,2,3,2,3];
+  let best=null, bg=-99;
+  for(const cd of hand){
+    const wsum=cd.vl[0]+cd.vl[1]+cd.vl[2]+cd.vl[3];
+    for(let i=0;i<9;i++){
+      if(bd[i]) continue;
+      const n=settle(bd,i,cd,sd,rl,ce).reduce((a,w)=>a+w.length,0);
+      const g=n*10+pv[i]+Math.random()-wsum*0.05;
+      if(g>bg){ bg=g; best=[cd,i]; }
+    }
+  }
+  return best;
+}
+
+/* ==== ui ==== */
+const $=id=>document.getElementById(id);
+const board=$("board"), handB=$("handB"), handR=$("handR");
+let ST=null;
+
+let VMODE = localStorage.getItem("tt_vmode")==="image" ? "image" : "text";
+function imgOf(cd){ return "tt-cards/assets/cards/card-"+String(cd.id).padStart(3,"0")+".png"; }
+function cardHTML(cd,sd,dead){
+  const [u,r,d,l]=cd.vl;
+  const dk=dead?" dead":"";
+  const elTag=cd.el?`<img class="el" src="tt-cards/assets/elements/${cd.el}.png" alt="" title="元素: ${cd.el}">`:"";
+  const vs=`<span class="v u">${hx(u)}</span><span class="v r">${hx(r)}</span>
+    <span class="v d">${hx(d)}</span><span class="v l">${hx(l)}</span>
+    <span class="nm">${cd.nm}</span>`;
+  if(VMODE==="image"){
+    return `<div class="card ${sd} imgv${dk}">
+    <img class="bg" src="${imgOf(cd)}" alt="" loading="lazy" onerror="this.closest('.card').classList.add('imgfail')">${elTag}${vs}</div>`;
+  }
+  return `<div class="card ${sd}${dk}">
+    ${elTag}${vs}</div>`;
+}
+// 人是否可操作当前方
+function canPlay(){
+  return ST && !ST.anim && !ST.over && ST.mode!=="demo"
+    && (ST.mode==="pvp" || ST.sd==="b");
+}
+function renderBoard(){
+  board.querySelectorAll(".cell").forEach((el,i)=>{
+    const t=ST.bd[i];
+    const ce=ST.ce ? ST.ce[i] : null;
+    const mark=ce?`<img class="cel" src="tt-cards/assets/elements/${ce}.png" alt="" title="元素格: ${ce}">`:"";
+    el.innerHTML=(t?cardHTML(t.cd,t.sd,!!t.dead):`<span class="pos">${i+1}</span>`)+mark;
+    el.classList.toggle("ok", !!ST.sel && !t);
+    el.classList.toggle("hasEl", !!ce);
+  });
+}
+function renderHand(sd){
+  const box=sd==="b"?handB:handR;
+  box.innerHTML=ST.hand[sd].map((cd,i)=>{
+    const sel=ST.sel && ST.sel.sd===sd && ST.sel.i===i ? " sel":"";
+    const inner=cardHTML(cd,sd).replace('class="card ', 'data-sd="'+sd+'" data-i="'+i+'" class="card'+sel+' ');
+    return `<div class="hslot">${inner}${VMODE==="image"?`<div class="hn">${cd.nm}</div>`:""}</div>`;
+  }).join("");
+}
+function renderScore(){
+  const [b,r]=count(ST.bd);
+  $("score").innerHTML=`<span class="sb">蓝 ${b}</span> : <span class="sr">红 ${r}</span><small>(红方终局计手中滞留牌)</small>`;
+}
+function renderTurn(){
+  const el=$("turn");
+  if(ST.over){ el.textContent="终局"; el.className="d"; return; }
+  el.className=ST.sd;
+  if(ST.anim){ el.textContent=who(ST.sd)+"方结算中…"; return; }
+  if(ST.mode==="demo"){ el.textContent="演示对局进行中…"; el.className="d"; }
+  else if(ST.mode==="pve" && ST.sd==="r"){ el.textContent="红方思考中…"; }
+  else{ el.textContent=who(ST.sd)+"方回合 · 请点手牌落子"; }
+  $("whoB").classList.toggle("act", ST.sd==="b" && !ST.over);
+  $("whoR").classList.toggle("act", ST.sd==="r" && !ST.over);
+}
+function renderBadges(){
+  const rl=ST.rl;
+  const t=[["基本","b0",1],["Elemental","eb",rl.elemental],["Same","sb",rl.same],["Plus","pb",rl.plus],["Wall","wb",rl.wall],["SuddenDeath","sdb",rl.sd],["Combo","cb",rl.combo]];
+  $("badges").innerHTML=t.filter(x=>x[2]).map(x=>`<span class="badge on ${x[1]}">${x[0]}</span>`).join("");
+}
+function renderAll(){
+  renderBoard(); renderHand("b"); renderHand("r");
+  renderScore(); renderTurn(); renderBadges();
+}
+function log(s){ $("log").textContent=s; }
+function toast(s){
+  const t=$("toast"); t.textContent=s; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),2200);
+}
+
+/* ==== flow ==== */
+// 发牌入口: 随机直发; 自选则弹选牌面板 (demo 模式始终随机)
+function newGame(){
+  $("overlay").classList.remove("show");
+  const mode=$("mode").value;
+  if(mode!=="demo" && $("deal").value==="pick"){
+    PKBUF={b:null, r:null};
+    openPicker("b");
+    return;
+  }
+  const deck=shuffle(CARDS.slice());
+  startGame(deck.slice(0,5), deck.slice(5,10));
+}
+// 开局主体: 双方手牌齐备后生效
+function startGame(bh, rh){
+  const mode=$("mode").value;
+  const rl={same:$("cSame").checked, plus:$("cPlus").checked, wall:$("cWall").checked,
+    combo:$("cCombo").checked, elemental:$("cElem").checked, sd:$("cSD").checked, trade:$("trade").value};
+  let ce=null;
+  if(rl.elemental){
+    ce=Array(9).fill(null);
+    const n=1+Math.floor(Math.random()*3);   // 1-3 格随机元素
+    for(let k=0;k<n;k++) ce[Math.floor(Math.random()*9)]=ELEMENTS[Math.floor(Math.random()*8)];
+  }
+  ST={
+    bd:Array(9).fill(null),
+    hand:{b:bh, r:rh},
+    sd:"b", sel:null, anim:false, over:false,
+    mode, rl, ce,
+  };
+  $("whoRsub").textContent = mode==="pvp" ? "玩家 2" : "AI";
+  $("whoBsub").textContent = mode==="pvp" ? "玩家 1" : mode==="demo" ? "AI" : "你";
+  renderAll();
+  log("新对局 · 蓝方先手" + (ce ? " · 元素格已布设" : ""));
+  if(ST.mode==="demo") setTimeout(aiTurn, 700);
+}
+function aiTurn(){
+  if(!ST || ST.over || ST.anim) return;
+  const pick=aiPick(ST.bd, ST.hand[ST.sd], ST.sd, ST.rl, ST.ce);
+  if(pick) doMove(ST.sd, pick[0], pick[1]);
+}
+function doMove(sd,cd,i){
+  ST.anim=true; ST.sel=null;
+  const waves=put(ST.bd,i,cd,sd,ST.rl,ST.ce);
+  for(const w of waves) for(const np of w) ST.bd[np].sd=sd;   // 翻转写回盘面
+  ST.hand[sd].splice(ST.hand[sd].indexOf(cd),1);
+  renderAll();
+  const cellEl=board.querySelectorAll(".cell")[i];
+  cellEl.querySelector(".card").classList.add("pop");
+  // 波次动画: 半程 90 度换色, 不镜像; 波间隔 400ms
+  const cells=board.querySelectorAll(".cell");
+  waves.forEach((w,k)=>{
+    for(const np of w){
+      const el=cells[np].querySelector(".card");
+      setTimeout(()=>{
+        el.classList.add("mid");
+        setTimeout(()=>{
+          el.classList.remove("b","r"); el.classList.add(sd);
+          el.classList.remove("mid");
+        },220);
+      }, 320+k*400);
+    }
+  });
+  const total=waves.reduce((a,w)=>a+w.length,0);
+  const wait=360+waves.length*400+180;
+  setTimeout(()=>afterMove(sd,cd,i,total), wait);
+}
+function afterMove(sd,cd,i,total){
+  ST.anim=false;
+  log(`${who(sd)}方落 ${cd.nm}[${tag(cd)}] 于 ${i+1} 号位, 翻转 ${total} 张`);
+  if(ST.bd.every(t=>t)){ finish(); return; }
+  ST.sd = sd==="b"?"r":"b";
+  renderAll();
+  if(ST.mode==="demo") setTimeout(aiTurn, 420);
+  else if(ST.mode==="pve" && ST.sd==="r") setTimeout(aiTurn, 560);
+}
+// 十牌九格: 后手必滞 1 张 —— 先手计场上, 后手计场上加滞留手牌
+// SuddenDeath: 平局时随机翻面一张场上牌出局不计分, 重比至分胜负
+// 交换: One/Diff/All 按胜负拿卡; Direct 各自拿走己色牌 (平局也换)
+function finish(){
+  ST.over=true;
+  const hold=ST.hand.r;
+  let [b,r]=count(ST.bd);
+  let r2=r+hold.length;
+  let res,cls,win=null;
+  let sdLine="";
+  if(b>r2){ res="蓝 方 胜"; cls="b"; win="b"; }
+  else if(b<r2){ res="红 方 胜"; cls="r"; win="r"; }
+  else if(ST.rl.sd){
+    // 骤亡: 逐张随机翻面, 直至分出胜负
+    while(true){
+      const live=ST.bd.map((t,k)=>({t,k})).filter(x=>x.t && !x.t.dead);
+      if(!live.length) break;
+      const pk=live[Math.floor(Math.random()*live.length)];
+      pk.t.dead=true;
+      const [nb,nr]=count(ST.bd);
+      const nr2=nr+hold.length;
+      sdLine+=(sdLine?"、":"")+(pk.k+1)+"号 "+pk.t.cd.nm;
+      if(nb!==nr2){ b=nb; r=nr; r2=nr2; break; }
+    }
+    if(b>r2){ res="蓝 方 胜"; cls="b"; win="b"; }
+    else if(b<r2){ res="红 方 胜"; cls="r"; win="r"; }
+    else{ res="平 局"; cls="d"; }
+  }
+  else{ res="平 局"; cls="d"; }
+  renderAll();
+  let tradeLine="平局 · 无交换";
+  if(ST.rl.trade==="direct"){
+    const bp=ST.bd.filter(t=>t && !t.dead && t.sd==="b").map(t=>t.cd.nm);
+    const rp=ST.bd.filter(t=>t && !t.dead && t.sd==="r").map(t=>t.cd.nm).concat(hold.map(c=>c.nm));
+    tradeLine=`交换[Direct] · 蓝方获得 ${bp.join(", ")||"—"} / 红方获得 ${rp.join(", ")||"—"}`;
+  } else if(win){
+    const lose=win==="b"?"r":"b";
+    const pool=ST.bd.filter(t=>t && !t.dead && t.sd===lose).map(t=>t.cd).concat(ST.hand[lose]);
+    pool.sort((x,y)=>(y.vl[0]+y.vl[1]+y.vl[2]+y.vl[3])-(x.vl[0]+x.vl[1]+x.vl[2]+x.vl[3]));
+    const diff=Math.abs(b-r2);
+    const n=ST.rl.trade==="all"?pool.length:ST.rl.trade==="diff"?Math.min(diff,pool.length):1;
+    const tn=ST.rl.trade==="one"?"One":ST.rl.trade==="diff"?"Diff":"All";
+    tradeLine=`交换[${tn}] · ${who(win)}方获得 ${pool.slice(0,n).map(c=>c.nm).join(", ")}`;
+  }
+  $("ovT").textContent=res; $("ovT").className="t "+cls;
+  $("ovS").innerHTML=`<span class="sb">蓝方 ${b} 张</span> : <span class="sr">红方 ${r2} 张</span>`;
+  $("ovM").innerHTML=(sdLine?`SuddenDeath · 翻面出局: <span class="hold">${sdLine}</span><br>`:"")+(hold.length?`红方含手中滞留 ${hold.length} 张 · <span class="hold">${hold.map(c=>c.nm).join(", ")}</span><br>`:"")+tradeLine;
+  log(`终局: 蓝${b} : 红${r2}`+(sdLine?` · 骤亡翻 ${sdLine}`:"")+` · ${tradeLine}`);
+  setTimeout(()=>$("overlay").classList.add("show"), 500);
+}
+
+/* ==== picker ==== 自选卡组: 110 张浏览点选 5 张, pvp 双方轮选 */
+let PK=null, PKBUF={b:null,r:null};
+function openPicker(side){
+  PK={side, sel:[], off: side==="r" && PKBUF.b ? PKBUF.b.map(c=>CARDS.indexOf(c)) : []};
+  const pvp=$("mode").value==="pvp";
+  $("pkTitle").textContent=`${who(side)}方选牌 · 点选 5 张${pvp?(side==="b"?"（红方随后）":""):"（红方随机）"}`;
+  renderPicker();
+  $("picker").classList.add("show");
+}
+function renderPicker(){
+  $("pkGrid").innerHTML=CARDS.map((cd,i)=>{
+    const on=PK.sel.includes(i)?" sel":"";
+    const off=PK.off.includes(i)?" off":"";
+    return `<div class="pkc${on}${off}" data-i="${i}"><span class="no">${i+1}</span>${cardHTML(cd,PK.side)}<div class="hn">${cd.nm}</div></div>`;
+  }).join("");
+  $("pkCount").textContent=PK.sel.length+"/5";
+}
+function pickerDone(){
+  if(PK.sel.length!==5) return;
+  PKBUF[PK.side]=PK.sel.map(i=>CARDS[i]);
+  $("picker").classList.remove("show");
+  $("pkGrid").innerHTML="";
+  if(PK.side==="b" && $("mode").value==="pvp"){ openPicker("r"); return; }
+  if(!PKBUF.b){ const d1=shuffle(CARDS.slice()); PKBUF.b=d1.slice(0,5); }
+  if(!PKBUF.r){ PKBUF.r=shuffle(CARDS.filter(c=>!PKBUF.b.includes(c))).slice(0,5); }
+  startGame(PKBUF.b, PKBUF.r);
+}
+
+/* ==== events ==== */
+for(let i=0;i<9;i++){
+  const c=document.createElement("div");
+  c.className="cell"; c.dataset.i=i; board.appendChild(c);
+}
+board.addEventListener("click",e=>{
+  const el=e.target.closest(".cell"); if(!el) return;
+  if(!ST.sel || ST.anim || ST.over) return;
+  const i=+el.dataset.i;
+  if(ST.bd[i]) return;
+  const {sd}=ST.sel, hi=ST.sel.i;
+  doMove(sd, ST.hand[sd][hi], i);
+});
+handB.addEventListener("click",e=>onHand(e));
+handR.addEventListener("click",e=>onHand(e));
+function onHand(e){
+  const c=e.target.closest(".card"); if(!c) return;
+  if(!canPlay()) return;
+  const sd=c.dataset.sd, i=+c.dataset.i;
+  if(sd!==ST.sd) return;
+  ST.sel=(ST.sel && ST.sel.sd===sd && ST.sel.i===i)?null:{sd,i};
+  renderHand(sd); renderBoard();
+}
+$("btnNew").addEventListener("click",newGame);
+$("ovBtn").addEventListener("click",newGame);
+$("mode").addEventListener("change",newGame);
+["cSame","cPlus","cWall","cElem","cCombo","cSD"].forEach(id=>$(id).addEventListener("change",()=>{
+  if(ST) renderBadges();
+  if(ST && !ST.over) toast("规则将在新对局生效");
+}));
+["trade","deal"].forEach(id=>$(id).addEventListener("change",()=>{
+  toast(id==="trade"?"交换规则将在新对局生效":"发牌方式将在新对局生效");
+}));
+$("pkOk").addEventListener("click",pickerDone);
+$("pkCancel").addEventListener("click",()=>{ $("picker").classList.remove("show"); $("pkGrid").innerHTML=""; });
+$("pkGrid").addEventListener("click",e=>{
+  const box=e.target.closest(".pkc"); if(!box || !PK) return;
+  const i=+box.dataset.i;
+  if(PK.off.includes(i)) return;          // 对方已选, 禁选
+  const k=PK.sel.indexOf(i);
+  if(k>=0) PK.sel.splice(k,1);
+  else if(PK.sel.length<5) PK.sel.push(i);
+  renderPicker();
+});
+// 渲染模式切换: 文字 / 图片, localStorage 记忆
+function setVmode(m){
+  VMODE=m; localStorage.setItem("tt_vmode",m);
+  $("vText").classList.toggle("on", m==="text");
+  $("vImg").classList.toggle("on", m==="image");
+  renderAll();
+}
+$("vText").addEventListener("click",()=>setVmode("text"));
+$("vImg").addEventListener("click",()=>setVmode("image"));
+newGame();
+$("vText").classList.toggle("on", VMODE==="text");
+$("vImg").classList.toggle("on", VMODE==="image");
+</script>
+</body>
+</html>
